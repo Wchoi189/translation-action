@@ -28,6 +28,8 @@ more details for each provider below.
     * [Microsoft](#microsoft)
     * [MyMemory](#mymemory)
     * [FunTranslations](#funtranslations)
+    * [OpenRouter](#openrouter)
+    * [Upstage](#upstage)
   * [Contributions](#contributions)
 <!-- TOC -->
 
@@ -36,9 +38,9 @@ more details for each provider below.
 | Name                     | Required | Description                                                                                      | Default | Possible values                                                                                                                                                                         |
 |--------------------------|----------|--------------------------------------------------------------------------------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | source                   | Yes      | Can be text or path to the file for translation                                                  |         | _&lt;Path&gt;_,_&lt;String&gt;_                                                                                                                                                         |
-| provider                 | Yes      | Provider identifier                                                                              |         | [deepl](#deepl), [google](#google), [libretranslate](#libretranslate), [linguatools](#linguatools), [microsoft](#microsoft), [mymemory](#mymemory), [funtranslations](#funtranslations) |
+| provider                 | Yes      | Provider identifier                                                                              |         | [deepl](#deepl), [google](#google), [libretranslate](#libretranslate), [linguatools](#linguatools), [microsoft](#microsoft), [mymemory](#mymemory), [funtranslations](#funtranslations), [openrouter](#openrouter), [upstage](#upstage) |
 | api_key                  | No       | API key that should be used for chosen [provider](#providers)                                    | `""`    | _&lt;String&gt;_                                                                                                                                                                        |
-| api_additional_parameter | No       | Additional parameter for the API. eg the region for Microsoft: `canadacentral`                   | `""`    | _&lt;String&gt;_                                                                                                                                                                        |
+| api_additional_parameter | No       | Additional parameter for the API. eg the region for Microsoft: `canadacentral`, the model for OpenRouter: `openai/gpt-4`, or the model for Upstage: `solar-pro` | `""`    | _&lt;String&gt;_                                                                                                                                                                        |
 | lang                     | Yes      | The translation direction. Should be one of the option proposed by chosen [provider](#providers) |         | _&lt;String&gt;_                                                                                                                                                                        |
 
 ## Outputs
@@ -230,6 +232,88 @@ Example:
     provider: funtranslations
     lang: 'klingon'
     source: 'Who are you'
+```
+
+### OpenRouter
+
+* Identifier is `openrouter`.
+* Uses LLM-based translation for high-quality results, especially suitable for
+  translating documentation like README.md files.
+* Supports any language pair that the selected model supports.
+* Language direction should be separated by `-` (hyphen) character. For example,
+  `en-uk` should be used in case you want to translate text from English into
+  Ukrainian. See example below for more details.
+* How to get API key:
+  * Sign up at [OpenRouter](https://openrouter.ai/).
+  * Go to `Keys` section and create an API key.
+* Model selection (optional):
+  * Use `api_additional_parameter` to specify the model. Default is
+    `openai/gpt-3.5-turbo`.
+  * Examples: `openai/gpt-4`, `anthropic/claude-3-opus`, `google/gemini-pro`
+  * See [OpenRouter Models](https://openrouter.ai/models) for available models
+    and pricing.
+* Note: OpenRouter charges per token (input + output). Higher quality models may
+  cost more but provide better translations.
+
+Example of translating a README.md file from English into Ukrainian:
+
+```yaml
+jobs:
+  openrouter:
+    name: OpenRouter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: fabasoad/translation-action@v4
+        id: openrouter-step
+        with:
+          provider: openrouter
+          lang: en-uk
+          source: README.md
+          api_key: ${{ secrets.OPENROUTER_API_KEY }}
+          api_additional_parameter: openai/gpt-4
+      - name: Print the result
+        run: echo "Translation is '${{ steps.openrouter-step.outputs.text }}'"
+        shell: sh
+```
+
+### Upstage
+
+* Identifier is `upstage`.
+* Uses Upstage AI's Solar models for high-quality translations.
+* Supports any language pair that the selected model supports.
+* Language direction should be separated by `-` (hyphen) character. For example,
+  `en-uk` should be used in case you want to translate text from English into
+  Ukrainian. See example below for more details.
+* How to get API key:
+  * Sign up at [Upstage AI](https://www.upstage.ai/).
+  * Go to your account settings and create an API key.
+* Model selection (optional):
+  * Use `api_additional_parameter` to specify the model. Default is `solar-pro2`.
+  * Examples: `solar-pro`, `solar-pro-instruct`
+  * See [Upstage AI Models](https://www.upstage.ai/) for available models and
+    pricing.
+
+Example of translating a README.md file from English into Korean:
+
+```yaml
+jobs:
+  upstage:
+    name: Upstage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: fabasoad/translation-action@v4
+        id: upstage-step
+        with:
+          provider: upstage
+          lang: en-ko
+          source: README.md
+          api_key: ${{ secrets.UPSTAGE_API_KEY }}
+          api_additional_parameter: solar-pro2
+      - name: Print the result
+        run: echo "Translation is '${{ steps.upstage-step.outputs.text }}'"
+        shell: sh
 ```
 
 ## Contributions

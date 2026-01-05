@@ -2,6 +2,7 @@
 .vscode/*
 !.vscode/settings.json
 .env
+.env.local
 .idea
 coverage
 node_modules

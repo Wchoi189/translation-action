@@ -6,6 +6,8 @@ import MicrosoftProvider from './MicrosoftProvider'
 import MyMemoryProvider from './MyMemoryProvider'
 import DeeplProvider from './DeeplProvider'
 import GoogleProvider from './GoogleProvider'
+import OpenRouterProvider from './OpenRouterProvider'
+import UpstageProvider from './UpstageProvider'
 
 export type ProviderType =
   'deepl' |
@@ -14,7 +16,9 @@ export type ProviderType =
   'linguatools' |
   'microsoft' |
   'mymemory' |
-  'libretranslate'
+  'libretranslate' |
+  'openrouter' |
+  'upstage'
 
 export default class ProviderFactory {
   getProvider(
@@ -35,6 +39,10 @@ export default class ProviderFactory {
       return new MicrosoftProvider(apiKey, apiAdditionalParam)
     case 'mymemory':
       return new MyMemoryProvider(apiKey)
+    case 'openrouter':
+      return new OpenRouterProvider(apiKey, apiAdditionalParam)
+    case 'upstage':
+      return new UpstageProvider(apiKey, apiAdditionalParam)
     default:
       throw new Error(`${type} is not supported`)
     }
